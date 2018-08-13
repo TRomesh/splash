@@ -1,39 +1,37 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-
+import { loadImages } from "../../actions/actions";
+import Button from "./Button";
 import "./styles.css";
 
-const key = "d67b28fda9d16967d2e1624e4df3239799eeda0f3b9a4539fe7b8e353d8992a0";
-
 class ImageGrid extends Component {
-  state = {
-    images: []
-  };
-
   componentDidMount() {
-    fetch(`https://api.unsplash.com/photos/?client_id=${key}&per_page=28`)
-      .then(res => res.json())
-      .then(images => {
-        this.setState({
-          images
-        });
-      });
+    this.props.LoadImages();
   }
 
+  LoadGridImages = () => {
+    const { images } = this.props;
+    if (images.images) {
+      return images.images.map(image => (
+        <div
+          key={image.id}
+          className={`item item-${Math.ceil(image.height / image.width)}`}
+        >
+          <img src={image.urls.small} alt={image.user.username} />
+        </div>
+      ));
+    }
+  };
+
   render() {
-    const { images } = this.state;
+    const { error, isLoading, LoadImages } = this.props;
     return (
       <div className="content">
-        <section className="grid">
-          {images.map(image => (
-            <div
-              key={image.id}
-              className={`item item-${Math.ceil(image.height / image.width)}`}
-            >
-              <img src={image.urls.small} alt={image.user.username} />
-            </div>
-          ))}
-        </section>
+        <section className="grid">{this.LoadGridImages()}</section>
+        {error && <div className="error">{JSON.stringify(error)}</div>}
+        <Button onClick={() => !isLoading && LoadImages()} loading={isLoading}>
+          Load More..
+        </Button>
       </div>
     );
   }
@@ -45,7 +43,13 @@ const mapStateToProps = ({ isLoading, images, error }) => ({
   error
 });
 
+const mapDispatchToProps = dispatch => {
+  return {
+    LoadImages: () => dispatch(loadImages())
+  };
+};
+
 export default connect(
   mapStateToProps,
-  null
+  mapDispatchToProps
 )(ImageGrid);
