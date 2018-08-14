@@ -44,6 +44,14 @@ const fetchImages = async page => {
   return response;
 };
 
+const fetchImageStats = async id => {
+  const response = await axios.get(`${splashService}${id}/statistics${key}`);
+  if (response.status >= 400) {
+    throw new Error(response.errors);
+  }
+  return response;
+};
+
 export {
   loadImages,
   setImages,
@@ -51,5 +59,6 @@ export {
   loadImageStats,
   setImageStats,
   setImageStatsError,
-  fetchImages
+  fetchImages,
+  fetchImageStats
 };

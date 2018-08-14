@@ -1,7 +1,8 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { loadImages } from "../../actions/actions";
-import Button from "./Button";
+import Button from "../Button/button";
+import Stats from "../Stats/stats";
 import "./styles.css";
 
 class ImageGrid extends Component {
@@ -10,13 +11,14 @@ class ImageGrid extends Component {
   }
 
   LoadGridImages = () => {
-    const { images } = this.props;
+    const { images, imageStats } = this.props;
     if (images.images) {
       return images.images.map(image => (
         <div
           key={image.id}
           className={`item item-${Math.ceil(image.height / image.width)}`}
         >
+          <Stats stats={imageStats} />
           <img src={image.urls.small} alt={image.user.username} />
         </div>
       ));
@@ -37,10 +39,11 @@ class ImageGrid extends Component {
   }
 }
 
-const mapStateToProps = ({ isLoading, images, error }) => ({
+const mapStateToProps = ({ isLoading, images, error, imageStats }) => ({
   isLoading,
   images,
-  error
+  error,
+  imageStats
 });
 
 const mapDispatchToProps = dispatch => {
